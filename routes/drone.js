@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 const loginModel = require('../schemas/logindb')
 router.post('/login', async(req, res) => {
     const { username, password } = req.body;
@@ -15,6 +17,11 @@ router.post('/login', async(req, res) => {
     {
         return res.json({message:"failed",error:"wrong password"});
     }
-    return res.status(200).json({message:"login successfull"});
+    const token = jwt.sign({id:user.id},
+        process.env.SECRET_KEY,
+        {
+            expiresIn:'20d'
+        })
+    return res.status(200).json({message:"login successfull",token:token});
 })
 module.exports = router
