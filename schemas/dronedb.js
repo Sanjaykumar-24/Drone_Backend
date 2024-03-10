@@ -13,6 +13,9 @@ const droneSchema = new mongoose.Schema(
         Exercise:{
             type:String
         },
+        Date:{
+            type:String
+        },
         StartTime:{
             type:String
         },
