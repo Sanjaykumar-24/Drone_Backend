@@ -70,6 +70,9 @@ router.post('/data',verify,async(req,res)=>{
      const user = await loginModel.findById(userId)
      data.Duration = duration
      data.Trainer = user.username
+     const all = await droneModel.find();
+     data.CumDuration = all.CumDuration + duration;
+
      const info = await droneModel.create(data)
      info.save()
      if(!info)
