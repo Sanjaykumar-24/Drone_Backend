@@ -72,12 +72,15 @@ router.post('/data',verify,async(req,res)=>{
      data.Trainer = user.username
      const all = await droneModel.find();
     let n = all.length;
-    if(n==0)
-    {
-        data.CumDuration = duration
+    let cumulativeDuration;
+    if (n === 0) {
+        cumulativeDuration = duration; // Set cumulative duration to current duration if no previous entries
+    } else {
+        const previousCumulativeDuration = all[n - 1].CumDuration;
+        cumulativeDuration = addTimeStrings(previousCumulativeDuration, duration);
     }
-    else
-        data.CumDuration = all[n-1].CumDuration + duration;
+
+    data.CumDuration = cumulativeDuration;
 
      const info = await droneModel.create(data)
      info.save()
@@ -88,6 +91,36 @@ router.post('/data',verify,async(req,res)=>{
      return res.json({message:'success'})
 })
 
+function addTimeStrings(time1, time2) {
+    const [hours1, rawMinutes1] = time1.split('h:');
+    const [hours2, rawMinutes2] = time2.split('h:');
 
+    const minutes1 = parseInt(rawMinutes1.replace('m', ''), 10);
+    const minutes2 = parseInt(rawMinutes2.replace('m', ''), 10);
+
+    const parsedHours1 = parseInt(hours1, 10);
+    const parsedHours2 = parseInt(hours2, 10);
+
+    let totalHours = parsedHours1 + parsedHours2;
+    let totalMinutes = minutes1 + minutes2;
+
+   
+    totalHours += Math.floor(totalMinutes / 60);
+    totalMinutes %= 60;
+
+    let finalHours = totalHours % 24;
+    let finalDays = Math.floor(totalHours / 24);
+
+    
+    let result = '';
+    if (finalDays > 0) {
+        result += finalDays + 'd:';
+    }
+    result += finalHours + 'h:' + totalMinutes + 'm';
+
+    return result;
+}
+
+    
 
 module.exports = router
