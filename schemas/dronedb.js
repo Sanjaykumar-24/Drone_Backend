@@ -19,6 +19,9 @@ const droneSchema = new mongoose.Schema(
         StartTime:{
             type:String
         },
+        Place:{
+             type:String
+        },
         EndTime:{
             type:String
         },
