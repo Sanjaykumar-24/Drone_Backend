@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken')
 const moment = require('moment-timezone')
+const ExcelJS = require('exceljs');
 require('dotenv').config()
 const loginModel = require('../schemas/logindb');
 const droneModel = require('../schemas/dronedb');
@@ -121,5 +122,35 @@ function addTimeStrings(time1, time2) {
     return result;
 }
 ///////////////////////////////////////////////////////////////////////////
+
+router.get('/generate-excel', async (req, res) => {
+    try {
+     
+      const data = await droneModel.find().exec();
+  
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Drone Data');
+  
+      worksheet.addRow(['UNI', 'Trainer', 'Trainee', 'Exercise', 'Date', 'StartTime', 'EndTime', 'Duration', 'CumDuration']);
+  
+      data.forEach(item => {
+        worksheet.addRow([item.UNI, item.Trainer, item.Trainee, item.Exercise, item.Date, item.StartTime, item.EndTime, item.Duration, item.CumDuration]);
+      });
+  
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="drone_data.xlsx"');
+  
+      
+      workbook.xlsx.write(res)
+        .then(() => {
+          res.end();
+        });
+    } catch (error) {
+      console.error('Error generating Excel:', error);
+      res.status(500).send('Error generating Excel');
+    }
+  });
+
+
 
 module.exports = router
