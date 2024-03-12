@@ -127,48 +127,10 @@ function addTimeStrings(time1, time2) {
 ///////////////////////////////////////////////////////////////////////////
 
 
-router.get('/rpaslog', verify, async(req, res) => {
+router.get('/rpaslog',verify, async(req, res) => {
     try {
-        const data = await droneModel.find().exec();
-
-        const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('RPAS LOGBOOK');
-
-        // Set column widths
-        worksheet.columns = [
-            { header: 'Date', key: 'Date', width: 15 },
-            { header: 'Name of RPIC', key: 'Trainer', width: 20 },
-            { header: 'Place of Operation', key: 'Place', width: 25 },
-            { header: 'StartTime(UTC)', key: 'StartTime', width: 18 },
-            { header: 'EndTime(UTC)', key: 'EndTime', width: 18 },
-            { header: 'Duration(HH:MM)', key: 'Duration', width: 18 },
-            { header: 'CumDuration(HH:MM)', key: 'CumDuration', width: 20 },
-        ];
-
-        // Add data rows
-        data.forEach(item => {
-
-            worksheet.addRow([item.Date, item.Trainer, item.Place, item.StartTime, item.EndTime, item.Duration, item.CumDuration]);
-        });
-
-        const filePath = path.join(__dirname, '..', 'temp', 'rpaslog_drone_data.xlsx');
-
-        // Write the workbook to a temporary file
-        await workbook.xlsx.writeFile(filePath);
-
-        // Send the file as a download attachment
-        res.download(filePath, 'rpaslog_drone_data.xlsx', (err) => {
-            if (err) {
-                console.error('Error sending file:', err);
-                res.status(500).send('Error sending file');
-            }
-
-            fs.unlink(filePath, (err) => {
-                if (err) {
-                    console.error('Error deleting temporary file:', err);
-                }
-            });
-        });
+        const data = await droneModel.find();
+        res.json({message:"success",data});
     } catch (error) {
         console.error('Error generating Excel:', error);
         res.status(500).send('Error generating Excel');    
