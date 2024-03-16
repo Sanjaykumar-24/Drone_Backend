@@ -30,6 +30,9 @@ const droneSchema = new mongoose.Schema(
         },
         CumDuration:{
             type:String
+        },
+        landings:{
+            type:String
         }
      }
 )
