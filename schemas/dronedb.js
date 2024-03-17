@@ -33,6 +33,9 @@ const droneSchema = new mongoose.Schema(
         },
         landings:{
             type:String
+        },
+        BatteryNo:{
+            type:String
         }
      }
 )
